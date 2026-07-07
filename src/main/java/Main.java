@@ -10,26 +10,20 @@ public class Main {
 
         broker.createQueue("orders");
 
-        Producer p1 = new Producer("Cashier-1", broker);
-        Producer p2 = new Producer("Cashier-2", broker);
-        Producer p3 = new Producer("Cashier-3", broker);
+        Producer p1 = new Producer("Cashier-1", broker,"orders");
+        Producer p2 = new Producer("Cashier-2", broker,"orders");
+        Producer p3 = new Producer("Cashier-3", broker,"orders");
 
-        Consumer c1 = new Consumer("Chef-1", broker);
-        Consumer c2 = new Consumer("Chef-2", broker);
-        Consumer c3 = new Consumer("Chef-3", broker);
+        Consumer c1 = new Consumer("Chef-1", broker,"orders");
+        Consumer c2 = new Consumer("Chef-2", broker,"orders");
+        Consumer c3 = new Consumer("Chef-3", broker,"orders");
 
-        p1.publish("orders", "101", "Pepperoni Pizza");
+        new Thread(p1,"Producer-1").start();
+        new Thread(p2,"Producer-2").start();
+        new Thread(p3,"Producer-3").start();
 
-        p2.publish("orders", "102", "Veg Pizza");
-
-        p3.publish("orders", "103", "Cheese Burst");
-
-        System.out.println();
-
-        c1.consume("orders");
-
-        c2.consume("orders");
-
-        c3.consume("orders");
+        new Thread(c1,"Consumer-1").start();
+        new Thread(c2,"Consumer-2").start();
+        new Thread(c3,"Consumer-3").start();
     }
 }

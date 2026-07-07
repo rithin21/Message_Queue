@@ -6,29 +6,29 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Broker {
-    private final Map<String, BlockingQueue<Message>> queues=new ConcurrentHashMap<>();
+    private final Map<String, MessageQueue> queues=new ConcurrentHashMap<>();
 
     public void createQueue(String queueName){
-        queues.putIfAbsent(queueName,new LinkedBlockingQueue<>());
+        queues.putIfAbsent(queueName,new MessageQueue());
         System.out.println("created queue:"+queueName);
     }
 
     public void publish(String queueName,Message message){
-        BlockingQueue<Message>queue=queues.get(queueName);
+        MessageQueue queue=queues.get(queueName);
         if(queue==null){
             throw new RuntimeException(("queue not found"));
         }
-        queue.offer(message);
-        System.out.println("Published -> "+message);
+        queue.publish(message);
+        System.out.println(Thread.currentThread().getName()+"Published ->" +message); //the only change made bcs we are implementing threads
     }
 
     public Message consume(String queueName){
-        BlockingQueue<Message>queue= queues.get(queueName);
+        MessageQueue queue= queues.get(queueName);
         if(queue==null)
         {
             throw new RuntimeException("queue not found");
         }
-        return queue.poll();
+        return queue.consume();
     }
 
 }

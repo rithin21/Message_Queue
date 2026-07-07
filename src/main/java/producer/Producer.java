@@ -3,18 +3,38 @@ package producer;
 import broker.Broker;
 import broker.Message;
 
-public class Producer {
+import java.util.Random;
+
+public class Producer implements Runnable{
+
     private final String name;
     private final Broker broker;
+    private final String queueName;
 
-    public Producer(String name, Broker broker){
+    private final Random random=new Random();
+
+    public Producer(String name, Broker broker,String queueName){
         this.name=name;
         this.broker=broker;
+        this.queueName=queueName;
     }
 
-    public void publish(String queueName,String id,String payload){
-        Message message=new Message(id,payload);
-        System.out.println(name+"producing:"+message);
-        broker.publish(queueName,message);
+    @Override
+    public void run(){
+        int count=1;
+        while(true){
+            Message message=new Message(name+"-"+count,"pizza"+count);
+            System.out.println(name+"producing : "+message);
+            broker.publish(queueName,message);
+            count++;
+            try{
+                Thread.sleep(random.nextInt(3000));
+            }
+            catch(InterruptedException e){
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
     }
 }
