@@ -31,4 +31,28 @@ public class Broker {
         return queue.consume();
     }
 
+    public void printQueueState(String queueName){
+        MessageQueue queue=queues.get(queueName);
+        if(queue==null){
+            throw new RuntimeException("Queue not found");
+        }
+        queue.printState();
+    }
+
+    public void ack(String queueName,String messageId){
+        MessageQueue queue=queues.get(queueName);
+        if(queue==null){
+            throw new RuntimeException("queue not found");
+        }
+        queue.ack(messageId);
+    }
+
+    public void fail(String queueName,String messageId){
+        MessageQueue queue=queues.get(queueName);
+        if(queue==null){
+            throw new RuntimeException("Queue not found");
+        }
+        queue.fail(messageId);
+    }
+
 }

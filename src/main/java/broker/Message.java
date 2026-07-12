@@ -24,8 +24,20 @@ public class Message {
         status=s;
     }
 
+    public MessageStatus getStatus(){
+        return status;
+    }
+
     @Override
     public String toString(){
         return "[" +id + "]" + payload;
+    }
+
+    public void setRetryCount(int retryCount){
+        this.retryCount=retryCount;
+    }
+
+    public int getRetryCount(){
+        return retryCount;
     }
 }

@@ -22,7 +22,7 @@ public class Producer implements Runnable{
     @Override
     public void run(){
         int count=1;
-        while(true){
+        while(count<=1){
             Message message=new Message(name+"-"+count,"pizza"+count);
             System.out.println(name+"producing : "+message);
             broker.publish(queueName,message);

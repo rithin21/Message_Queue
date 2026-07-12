@@ -20,7 +20,15 @@ public class Consumer implements Runnable {
         while(true){
             Message message=broker.consume(queueName);
             if(message!=null){
+                System.out.println("\nBefore ACK");
+                broker.printQueueState(queueName);
+
                 System.out.println(name+"consumed :"+message);
+                //broker.ack(queueName,message.getId());
+                broker.fail(queueName,message.getId());
+
+                System.out.println("\nAFter ACK");
+                broker.printQueueState(queueName);
             }
         }
     }

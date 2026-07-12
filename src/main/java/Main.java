@@ -19,11 +19,20 @@ public class Main {
         Consumer c3 = new Consumer("Chef-3", broker,"orders");
 
         new Thread(p1,"Producer-1").start();
-        new Thread(p2,"Producer-2").start();
-        new Thread(p3,"Producer-3").start();
+//        new Thread(p2,"Producer-2").start();
+//        new Thread(p3,"Producer-3").start();
 
         new Thread(c1,"Consumer-1").start();
-        new Thread(c2,"Consumer-2").start();
-        new Thread(c3,"Consumer-3").start();
+//        new Thread(c2,"Consumer-2").start();
+//        new Thread(c3,"Consumer-3").start();
+        try {
+            Thread.sleep(5000);
+        }
+        catch(InterruptedException e){
+            System.out.println("unex");
+        }
+        broker.printQueueState("orders");
+
+
+        }
     }
-}
