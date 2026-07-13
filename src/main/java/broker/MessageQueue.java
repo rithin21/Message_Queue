@@ -20,7 +20,7 @@ public class MessageQueue {
         Message message=waitingQueue.poll();
         if(message!=null){
             message.setStatus(MessageStatus.IN_FLIGHT);
-            inFlight.put(message.getId(),new InFlightMessage(message));
+            inFlight.put(message.getId(),new InFlightMessage(message,10000));
 
 
         }
