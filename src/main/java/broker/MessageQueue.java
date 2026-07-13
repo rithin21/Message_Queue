@@ -3,6 +3,7 @@ package broker;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.DelayQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageQueue {
@@ -11,6 +12,7 @@ public class MessageQueue {
     private final BlockingQueue<Message>waitingQueue=new LinkedBlockingQueue<>();
     private final Map<String,InFlightMessage> inFlight=new ConcurrentHashMap<>();
     private final BlockingQueue<Message>deadLetterQueue=new LinkedBlockingQueue<>();
+    private final DelayQueue<InFlightMessage>timeoutQueue=new DelayQueue<>();
 
     public void publish(Message message){
         waitingQueue.offer(message);
@@ -20,7 +22,9 @@ public class MessageQueue {
         Message message=waitingQueue.poll();
         if(message!=null){
             message.setStatus(MessageStatus.IN_FLIGHT);
-            inFlight.put(message.getId(),new InFlightMessage(message,10000));
+            InFlightMessage wrapper =new InFlightMessage(message,10000);
+            inFlight.put(message.getId(),wrapper);
+            timeoutQueue.offer(wrapper);
 
 
         }
@@ -30,6 +34,7 @@ public class MessageQueue {
     public void ack(String messageId){
         InFlightMessage wrapper=inFlight.remove(messageId);
         if(wrapper!=null){
+            timeoutQueue.remove(wrapper);
             wrapper.getMessage().setStatus(MessageStatus.ACKNOWLEDGED);
             System.out.println("ACK received for"+wrapper.getMessage().getId());
         }
@@ -40,6 +45,7 @@ public class MessageQueue {
         if(wrapper==null){
             return;
             }
+        timeoutQueue.remove(wrapper);
         wrapper.getMessage().setRetryCount(wrapper.getMessage().getRetryCount()+1);
         System.out.println("Retry count:"+wrapper.getMessage().getRetryCount());
 
@@ -67,5 +73,17 @@ public class MessageQueue {
         System.out.println("Dead Letter Queue");
         System.out.println(deadLetterQueue);
         System.out.println();
+        System.out.println("Timeout Queue");
+        System.out.println(timeoutQueue);
+    }
+
+    public void printTimeoutQueue(){
+
+        System.out.println("Timeout Queue");
+
+        System.out.println(timeoutQueue);
+
+        System.out.println();
+
     }
 }
